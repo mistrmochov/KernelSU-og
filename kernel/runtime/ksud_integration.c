@@ -52,7 +52,9 @@ static const char KERNEL_SU_RC[] =
 static void stop_init_rc_hook();
 static void stop_execve_hook();
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 static struct work_struct stop_input_hook_work;
+#endif
 
 #define MAX_ARG_STRINGS 0x7FFFFFFF
 struct user_arg_ptr {
@@ -472,6 +474,7 @@ static void ksu_handle_sys_read(unsigned int fd, char __user **buf_ptr, size_t *
     fput(file);
 }
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 static unsigned int volumedown_pressed_count = 0;
 
 static bool is_volumedown_enough(unsigned int count)
@@ -521,6 +524,7 @@ bool ksu_is_safe_mode()
 
     return false;
 }
+#endif
 
 void ksu_execve_hook_ksud(const struct pt_regs *regs)
 {
@@ -599,6 +603,7 @@ static long ksu_sys_fstat(const struct pt_regs *regs)
     return ret;
 }
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 static int input_handle_event_handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
     unsigned int *type = (unsigned int *)&PT_REGS_PARM2(regs);
@@ -606,16 +611,21 @@ static int input_handle_event_handler_pre(struct kprobe *p, struct pt_regs *regs
     int *value = (int *)&PT_REGS_CCALL_PARM4(regs);
     return ksu_handle_input_handle_event(type, code, value);
 }
+#endif
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 static struct kprobe input_event_kp = {
     .symbol_name = "input_event",
     .pre_handler = input_handle_event_handler_pre,
 };
+#endif
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 static void do_stop_input_hook(struct work_struct *work)
 {
     unregister_kprobe(&input_event_kp);
 }
+#endif
 
 static void stop_init_rc_hook()
 {
@@ -629,6 +639,7 @@ static void stop_init_rc_hook()
     pr_info("unregister init_rc syscall hook\n");
 }
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
 void ksu_stop_input_hook_runtime(void)
 {
     static bool input_hook_stopped = false;
@@ -639,6 +650,7 @@ void ksu_stop_input_hook_runtime(void)
     bool ret = schedule_work(&stop_input_hook_work);
     pr_info("unregister input kprobe: %d!\n", ret);
 }
+#endif
 
 // ksud: module support
 void __init ksu_ksud_init()
