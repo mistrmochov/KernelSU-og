@@ -619,6 +619,11 @@ static void do_stop_input_hook(struct work_struct *work)
 
 static void stop_init_rc_hook()
 {
+    static bool rc_hook_stopped = false;
+    if (rc_hook_stopped) {
+        return;
+    }
+    rc_hook_stopped = true;
     ksu_syscall_table_unhook(__NR_read);
     ksu_syscall_table_unhook(__NR_fstat);
     pr_info("unregister init_rc syscall hook\n");
@@ -659,7 +664,7 @@ void __exit ksu_ksud_exit()
     // this should be done before unregister vfs_read_kp
     stop_init_rc_hook();
 #ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
-    unregister_kprobe(&input_event_kp);
+    ksu_stop_input_hook_runtime();
 #endif
 
     if (module_rc_buf) {
