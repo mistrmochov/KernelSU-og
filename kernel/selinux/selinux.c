@@ -1,3 +1,4 @@
+#ifdef CONFIG_KSU_SELINUX
 #include "selinux.h"
 #include "linux/cred.h"
 #include "linux/sched.h"
@@ -220,3 +221,4 @@ void escape_to_root_for_adb_root(void)
     }
     commit_creds(cred);
 }
+#endif

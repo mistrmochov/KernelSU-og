@@ -48,7 +48,9 @@ static void __init init_default_profiles()
     memcpy(&default_root_profile.capabilities.effective, &full_cap,
            sizeof(default_root_profile.capabilities.effective));
     default_root_profile.namespaces = KSU_NS_INHERITED;
+#ifdef CONFIG_KSU_SELINUX
     strcpy(default_root_profile.selinux_domain, KSU_DEFAULT_SELINUX_DOMAIN);
+#endif
 
     // This means that we will umount modules by default!
     default_non_root_profile.umount_modules = true;
@@ -144,6 +146,7 @@ static bool profile_valid(struct app_profile *profile)
             return false;
         }
 
+#ifdef CONFIG_KSU_SELINUX
         char *domain = profile->rp_config.profile.selinux_domain;
         static const size_t domain_len = sizeof(profile->rp_config.profile.selinux_domain);
         if (unlikely(need_migrate_su_domain)) {
@@ -158,6 +161,7 @@ static bool profile_valid(struct app_profile *profile)
             pr_err("invalid selinux_domain in app_profile: %s\n", profile->key);
             return false;
         }
+#endif
 #endif
     }
 
@@ -240,8 +244,14 @@ int ksu_set_app_profile(struct app_profile *profile)
     kref_init(&np->ref);
     memcpy(&np->profile, profile, sizeof(*profile));
     if (profile->allow_su) {
+#ifdef CONFIG_KSU_SELINUX
         pr_info("set root profile, key: %s, uid: %d, gid: %d, context: %s\n", profile->key, profile->curr_uid,
                 profile->rp_config.profile.gid, profile->rp_config.profile.selinux_domain);
+#else
+        pr_info("set root profile, key: %s, uid: %d, gid: %d\n",
+                profile->key, profile->current_uid,
+                profile->rp_config.profile.gid);
+#endif
     } else {
         pr_info("set app profile, key: %s, uid: %d, umount modules: %d\n", profile->key, profile->curr_uid,
                 profile->nrp_config.profile.umount_modules);
@@ -296,8 +306,12 @@ bool __ksu_is_allow_uid(uid_t uid)
 bool __ksu_is_allow_uid_for_current(uid_t uid)
 {
     if (unlikely(uid == 0)) {
+#ifdef CONFIG_KSU_SELINUX
         // already root, but only allow our domain.
         return is_ksu_domain();
+#else
+        return true;
+#endif
     }
     return __ksu_is_allow_uid(uid);
 }

@@ -88,8 +88,13 @@ void ksu_mark_running_process_locked(void)
         }
         int uid = task_uid(t).val;
         const struct cred *cred = get_task_cred(t);
+#ifdef CONFIG_KSU_SELINUX
         bool ksu_root_process = uid == 0 && is_task_ksu_domain(cred);
         bool is_zygote_process = is_zygote(cred);
+#else
+        bool ksu_root_process = uid == 0;
+        bool is_zygote_process = false;
+#endif
         bool is_shell = uid == 2000;
         // before boot completed, we shall mark init for marking zygote
         bool is_init = t->pid == 1;

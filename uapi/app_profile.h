@@ -23,7 +23,9 @@ struct root_profile {
         __u64 inheritable;
     } capabilities;
 
+#ifdef CONFIG_KSU_SELINUX
     char selinux_domain[KSU_SELINUX_DOMAIN];
+#endif
 
     __s32 namespaces;
 };

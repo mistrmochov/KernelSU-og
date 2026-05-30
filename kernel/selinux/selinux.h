@@ -13,6 +13,8 @@
 #define ZYGOTE_CONTEXT "u:r:zygote:s0"
 #define INIT_CONTEXT "u:r:init:s0"
 
+#ifdef CONFIG_KSU_SELINUX
+
 void setup_selinux(const char *, struct cred *);
 
 void setenforce(bool);
@@ -37,6 +39,9 @@ void setup_ksu_cred();
 
 void escape_to_root_for_adb_root();
 
+#ifdef CONFIG_KSU_SELINUX
 extern u32 ksu_file_sid;
+#endif
+#endif
 
 #endif

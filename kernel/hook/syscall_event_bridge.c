@@ -19,6 +19,7 @@
 #include "hook/syscall_event_bridge.h"
 #include "feature/adb_root.h"
 
+#ifdef CONFIG_KSU_SELINUX
 static int ksu_handle_init_mark_tracker(const char __user **filename_user)
 {
     char path[64];
@@ -46,6 +47,7 @@ static int ksu_handle_init_mark_tracker(const char __user **filename_user)
 
     return 0;
 }
+#endif
 
 long __nocfi ksu_hook_newfstatat(int orig_nr, const struct pt_regs *regs)
 {
@@ -102,6 +104,7 @@ long __nocfi ksu_hook_execve(int orig_nr, const struct pt_regs *regs)
     if (current_euid().val == 0)
         pending_root_execve = ksu_sulog_capture_root_execve(*filename_user, argv_user, GFP_KERNEL);
 
+#ifdef CONFIG_KSU_SELINUX
     if (current->pid != 1 && current_is_init) {
         ksu_handle_init_mark_tracker(filename_user);
         ret = ksu_adb_root_handle_execve((struct pt_regs *)regs);
@@ -113,6 +116,9 @@ long __nocfi ksu_hook_execve(int orig_nr, const struct pt_regs *regs)
         ksu_sulog_emit_pending(pending_root_execve, ret, GFP_KERNEL);
         return ret;
     }
+#else
+                ksu_handle_execve_sucompat(filename_user, NULL, NULL);
+#endif
 
     ret = ksu_syscall_table[orig_nr](regs);
     ksu_sulog_emit_pending(pending_root_execve, ret, GFP_KERNEL);
