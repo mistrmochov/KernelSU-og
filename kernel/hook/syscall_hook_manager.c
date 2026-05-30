@@ -108,7 +108,7 @@ static struct kretprobe *syscall_unregfunc_rp = NULL;
 static void ksu_sys_enter_handler(void *data, struct pt_regs *regs, long id)
 {
 #if defined(__x86_64__)
-    if (unlikely(!enable_tracepoints && in_compat_syscall()))
+    if (unlikely(in_compat_syscall()))
 #elif defined(__aarch64__)
     if (unlikely(is_compat_task()))
 #endif
