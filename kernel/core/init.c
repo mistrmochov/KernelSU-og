@@ -101,7 +101,7 @@ int __init kernelsu_init(void)
     }
 #endif
 
-#ifdef MODULE
+#if 0
     ksu_late_loaded = (current->pid != 1);
 #else
     ksu_late_loaded = false;
