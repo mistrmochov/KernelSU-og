@@ -16,7 +16,6 @@
 static int tracepoint_reg_count = 0;
 static DEFINE_SPINLOCK(tracepoint_reg_lock);
 
-static bool enable_tracepoints = true;
 static int init_pid_global = 0;
 
 int ksu_tp_marker_reg_count(void)

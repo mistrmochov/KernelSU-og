@@ -25,6 +25,8 @@
 
 #ifdef CONFIG_KRETPROBES
 
+static bool enable_tracepoints = true;
+
 static struct kretprobe *init_kretprobe(const char *name, kretprobe_handler_t handler)
 {
     struct kretprobe *rp = kzalloc(sizeof(struct kretprobe), GFP_KERNEL);
