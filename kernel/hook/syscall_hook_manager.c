@@ -61,10 +61,10 @@ static int syscall_regfunc_handler(struct kretprobe_instance *ri, struct pt_regs
     ksu_tp_marker_lock(&flags);
     if (ksu_tp_marker_reg_count() < 1) {
         // while install our tracepoint, mark our processes
-        ksu_mark_running_process_locked();
+        //ksu_mark_running_process_locked();
     } else if (ksu_tp_marker_reg_count() == 1) {
         // while other tracepoint first added, mark all processes
-        ksu_mark_all_process();
+        //ksu_mark_all_process();
     }
     ksu_tp_marker_inc_reg_count();
     ksu_tp_marker_unlock(&flags);
