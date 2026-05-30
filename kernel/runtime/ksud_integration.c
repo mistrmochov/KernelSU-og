@@ -657,7 +657,7 @@ void __exit ksu_ksud_exit()
 {
     // TODO:
     // this should be done before unregister vfs_read_kp
-    // stop_init_rc_hook();
+    stop_init_rc_hook();
 #ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
     unregister_kprobe(&input_event_kp);
 #endif
