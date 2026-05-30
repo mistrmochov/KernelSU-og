@@ -1,4 +1,6 @@
+#ifdef CONFIG_KSU_SELINUX
 #include "feature/selinux_hide.h"
+#endif
 #include <linux/rcupdate.h>
 #include <linux/slab.h>
 #include <linux/mm.h>

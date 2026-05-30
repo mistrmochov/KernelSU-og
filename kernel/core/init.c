@@ -24,7 +24,9 @@
 #include "selinux/selinux.h"
 #include "hook/syscall_hook.h"
 #include "feature/adb_root.h"
+#ifdef CONFIG_KSU_SELINUX
 #include "feature/selinux_hide.h"
+#endif
 #include "infra/symbol_resolver.h"
 
 #if defined(__x86_64__)
@@ -132,7 +134,9 @@ int __init kernelsu_init(void)
     ksu_sulog_init();
     ksu_adb_root_init();
     ksu_lsm_hook_init();
+#ifdef CONFIG_KSU_SELINUX
     ksu_selinux_hide_init();
+#endif
 
     ksu_supercalls_init();
 
@@ -208,7 +212,9 @@ void __exit kernelsu_exit(void)
 
     ksu_allowlist_exit();
 
+#ifdef CONFIG_KSU_SELINUX
     ksu_selinux_hide_exit();
+#endif
     ksu_lsm_hook_exit();
     ksu_adb_root_exit();
     ksu_sulog_exit();

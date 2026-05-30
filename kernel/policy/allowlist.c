@@ -249,7 +249,7 @@ int ksu_set_app_profile(struct app_profile *profile)
                 profile->rp_config.profile.gid, profile->rp_config.profile.selinux_domain);
 #else
         pr_info("set root profile, key: %s, uid: %d, gid: %d\n",
-                profile->key, profile->current_uid,
+                profile->key, profile->curr_uid,
                 profile->rp_config.profile.gid);
 #endif
     } else {

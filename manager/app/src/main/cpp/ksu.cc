@@ -205,6 +205,7 @@ bool is_kernel_umount_enabled() {
 }
 
 int set_selinux_hide_enabled(bool enabled) {
+    return 0;
     if (!set_feature(KSU_FEATURE_SELINUX_HIDE, enabled ? 1 : 0)) {
         return -errno;
     }
@@ -212,6 +213,7 @@ int set_selinux_hide_enabled(bool enabled) {
 }
 
 bool is_selinux_hide_enabled() {
+    return false;
     uint64_t value = 0;
     bool supported = false;
     if (!get_feature(KSU_FEATURE_SELINUX_HIDE, &value, &supported)) {

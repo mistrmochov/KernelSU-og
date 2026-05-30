@@ -49,7 +49,9 @@ kernelsu-objs += supercall/supercall.o
 
 kernelsu-objs += feature/adb_root.o
 
+ifeq ($(CONFIG_KSU_SELINUX),y)
 kernelsu-objs += feature/selinux_hide.o
+endif
 
 ifdef KBUILD_EXTMOD
 ifeq ($(CONFIG_KSU_DISABLE_MANAGER),y)
