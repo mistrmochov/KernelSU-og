@@ -643,10 +643,14 @@ void __init ksu_ksud_init()
     ksu_syscall_table_hook(__NR_read, ksu_sys_read, &orig_sys_read);
     ksu_syscall_table_hook(__NR_fstat, ksu_sys_fstat, &orig_sys_fstat);
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
     ret = register_kprobe(&input_event_kp);
     pr_info("ksud: input_event_kp: %d\n", ret);
+#endif
 
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
     INIT_WORK(&stop_input_hook_work, do_stop_input_hook);
+#endif
 }
 
 void __exit ksu_ksud_exit()
@@ -654,7 +658,9 @@ void __exit ksu_ksud_exit()
     // TODO:
     // this should be done before unregister vfs_read_kp
     // stop_init_rc_hook();
+#ifdef CONFIG_KSU_HANDLE_INPUT_EVENT
     unregister_kprobe(&input_event_kp);
+#endif
 
     if (module_rc_buf) {
         free_module_rc();
