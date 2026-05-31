@@ -205,8 +205,10 @@ void __exit kernelsu_exit(void)
     // Wait for any in-flight RCU readers (e.g. handler traversing allow_list)
     synchronize_rcu();
 
-    // Phase 2: Now safe to release data structures
-    ksu_observer_exit();
+    if (ksu_late_loaded)
+    {
+        ksu_observer_exit();
+    }
 
     ksu_throne_tracker_exit();
 
